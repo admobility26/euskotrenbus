@@ -8,3 +8,14 @@ test('video publication requires watermark declaration',async()=>{const u=new UR
 test('reader sees final exports and reference PDFs only',async()=>{const db={prepare(){return {bind(){return this;},async first(){return {id:'route-1'};},async run(){},async all(){return {results:[{id:'a',kind:'video'},{id:'b',kind:'export'},{id:'c',kind:'gpx'},{id:'d',kind:'pdf'}]};}};}};const r=await attachments(new Request(url),{DB:db},{role:'reader'},url.pathname,url);assert.deepEqual((await r.json()).files,[{id:'b',kind:'export'},{id:'d',kind:'pdf'}]);});
 
 test('reader may consult PDF but cannot request download or original media',async()=>{for(const [kind,download,status] of [['pdf',false,200],['export',false,200],['pdf',true,403],['export',true,403],['video',false,403],['gpx',false,403]]){const u=new URL('https://test.example/api/routes/route-1/files/file-1'+(download?'?download':''));const db={prepare(){return {bind(){return this;},async first(){return {id:'route-1',kind,filename:'file',content_type:kind==='pdf'?'application/pdf':'video/mp4',object_key:'key'};},async run(){}};}};const r=await attachments(new Request(u),{DB:db,MEDIA:{get:async()=>({size:4,body:new Uint8Array([1,2,3,4])})}},{role:'reader'},u.pathname,u);assert.equal(r.status,status,kind+' '+download);}});
+
+test('bundled PDFs are listed and served without R2; downloads remain admin-only',async()=>{
+ const u=new URL('https://test.example/api/routes/document-A2315-I/files');
+ const list=await attachments(new Request(u),env,{role:'reader'},u.pathname,u);
+ assert.deepEqual((await list.json()).files,[{id:'bundled-pdf',kind:'pdf',filename:'A2315I.pdf'}]);
+ for(const [role,download,status] of [['reader',false,200],['reader',true,403],['admin',true,200]]){
+  const file=new URL(u+'/bundled-pdf'+(download?'?download':''));
+  const response=await attachments(new Request(file),{...env,ASSETS:{fetch:async request=>{assert.equal(new URL(request.url).pathname,'/assets/route-pdfs/A2315I.pdf');return new Response('%PDF-test');}}},{role},file.pathname,file);
+  assert.equal(response.status,status);if(status===200){assert.equal(await response.text(),'%PDF-test');assert.equal(response.headers.get('Cache-Control'),'private, no-store');}
+ }
+});

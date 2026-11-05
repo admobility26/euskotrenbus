@@ -1,3 +1,4 @@
+import {builtinRoutes} from './builtinRoutes.js';
 import {adminSetup} from './adminSetup.js';
 import {hazards} from './hazards.js';
 import {attachments} from './attachments.js';
@@ -67,7 +68,7 @@ async function handle(request,env){
   if(request.method==='POST')requireAdmin(user);
   // Additive migration keeps existing user databases compatible with this release.
   await env.DB.prepare(routesSchema).run();
-  if(request.method==='GET'){const {results}=await env.DB.prepare('SELECT payload FROM routes ORDER BY created_at DESC LIMIT 500').all();return json({routes:results.map(r=>JSON.parse(r.payload))});}
+  if(request.method==='GET'){await env.DB.batch(builtinRoutes.map(r=>env.DB.prepare('INSERT OR IGNORE INTO routes(id,payload,created_by,created_at) VALUES(?,?,?,?)').bind(r.id,JSON.stringify(r),'bundled',0)));const {results}=await env.DB.prepare('SELECT payload FROM routes ORDER BY created_at DESC LIMIT 500').all();return json({routes:results.map(r=>JSON.parse(r.payload))});}
   if(request.method==='POST'){const route=validateRoute(await body(request,400000));await env.DB.prepare('INSERT INTO routes(id,payload,created_by,created_at) VALUES(?,?,?,?)').bind(route.id,JSON.stringify(route),user.id,Date.now()).run();return json({route},201);}
  }
  if(path==='/api/media'&&request.method==='GET'){const {results}=await env.DB.prepare("SELECT id,filename,kind,line,direction,watermarked FROM media WHERE published=1 AND (kind!='video' OR watermarked=1)").all();return json({media:results});}

@@ -1,11 +1,13 @@
+import {builtinRoutes} from './builtinRoutes.js';
 const schema='CREATE TABLE IF NOT EXISTS attachments (id TEXT PRIMARY KEY, route_id TEXT NOT NULL, kind TEXT NOT NULL, filename TEXT NOT NULL, object_key TEXT NOT NULL, content_type TEXT NOT NULL, size INTEGER NOT NULL, created_at INTEGER NOT NULL)';
 export async function attachments(request,env,user,path,url){
  const match=path.match(/^\/api\/routes\/([a-zA-Z0-9-]+)\/files(?:\/([a-zA-Z0-9-]+))?$/);if(!match)return null;
  const [,routeId,id]=match;
+ const bundled=builtinRoutes.find(r=>r.id===routeId);
  const reply=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
  if(!await env.DB.prepare('SELECT id FROM routes WHERE id=?').bind(routeId).first())return reply({error:'Recorrido no encontrado.'},404);
  await env.DB.prepare(schema).run();
- if(!id&&request.method==='GET'){const {results}=await env.DB.prepare('SELECT id,kind,filename,size FROM attachments WHERE route_id=? ORDER BY created_at DESC').bind(routeId).all();return reply({files:user.role==='admin'?results:results.filter(f=>['export','pdf'].includes(f.kind)),storageReady:!!env.MEDIA,localEditor:!!env.LOCAL_EDITOR,maxUploadBytes:env.MAX_UPLOAD_BYTES||90*1024*1024});}
+ if(!id&&request.method==='GET'){const {results}=await env.DB.prepare('SELECT id,kind,filename,size FROM attachments WHERE route_id=? ORDER BY created_at DESC').bind(routeId).all();if(bundled)results.push({id:'bundled-pdf',kind:'pdf',filename:bundled.pdfName});return reply({files:user.role==='admin'?results:results.filter(f=>['export','pdf'].includes(f.kind)),storageReady:!!env.MEDIA,localEditor:!!env.LOCAL_EDITOR,maxUploadBytes:env.MAX_UPLOAD_BYTES||90*1024*1024});}
  if(request.method==='PUT'){
   if(user.role!=='admin')return reply({error:'Solo el administrador puede subir archivos.'},403);
   if(!env.MEDIA)return reply({error:'Activa R2 y conecta el almacén privado para guardar archivos.'},503);
@@ -17,6 +19,14 @@ export async function attachments(request,env,user,path,url){
   await env.MEDIA.put(key,request.body,{httpMetadata:{contentType:type}});
   try{await env.DB.prepare('INSERT INTO attachments VALUES(?,?,?,?,?,?,?,?)').bind(fileId,routeId,kind,filename,key,type,size,Date.now()).run();}catch(e){await env.MEDIA.delete(key);throw e;}
   return reply({id:fileId},201);
+ }
+ if(id==='bundled-pdf'&&bundled&&['GET','HEAD'].includes(request.method)){
+  if(url.searchParams.has('download')&&user.role!=='admin')return reply({error:'Solo el administrador puede descargar documentos.'},403);
+  const asset=new URL('/assets/route-pdfs/'+bundled.pdfName,url);
+  const response=await env.ASSETS.fetch(new Request(asset,{method:request.method}));
+  if(!response.ok)return reply({error:'Archivo no encontrado.'},404);
+  const headers=new Headers(response.headers);headers.set('Content-Type','application/pdf');headers.set('Cache-Control','private, no-store');headers.set('X-Content-Type-Options','nosniff');headers.set('Content-Disposition',`${url.searchParams.has('download')?'attachment':'inline'}; filename="${bundled.pdfName}"`);
+  return new Response(response.body,{status:response.status,headers});
  }
  if(id&&['GET','HEAD'].includes(request.method)){
   const file=await env.DB.prepare('SELECT * FROM attachments WHERE route_id=? AND id=?').bind(routeId,id).first();if(!file)return reply({error:'Archivo no encontrado.'},404);
