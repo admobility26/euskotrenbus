@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+exports/
+private-media/
+.wrangler/
+.dev.vars
+
+datos-locales/
+paquetes/

@@ -1,0 +1,178 @@
+{
+  "source": "Tabla «Líneas carretera Bizkaia» facilitada por el administrador, 05/11/2026",
+  "lines": [
+    {
+      "number": "A2315",
+      "internalNumber": "10",
+      "name": "Santurtzi – Portugalete – UPV/EHU",
+      "outbound": "De Santurtzi a UPV",
+      "inbound": "De UPV/EHU a Santurtzi",
+      "variants": [
+        "Por Portugalete",
+        "Por Portugalete y Sestao",
+        "Por Portugalete, Sestao y Barakaldo",
+        "Por Portugalete · sale del parque Santurtzi",
+        "Por Portugalete · sale de Kabiezes"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A2316",
+      "internalNumber": "11",
+      "name": "Sestao – UPV/EHU",
+      "outbound": "De Sestao",
+      "inbound": "De UPV/EHU",
+      "variants": [
+        "Ida por Erreketa y Landeta",
+        "Servicio directo (Magisterio) · no entra en Landeta",
+        "Por Magisterio"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A2326",
+      "internalNumber": "12",
+      "name": "Barakaldo – UPV/EHU",
+      "outbound": "De Cruces o de Barakaldo",
+      "inbound": "De UPV/EHU",
+      "variants": [
+        "Cruces/Barakaldo–UPV",
+        "Barakaldo–UPV",
+        "Desde Cruces por Magisterio",
+        "Por Magisterio",
+        "Zorroza/Cruces/Barakaldo/UPV"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A2336",
+      "internalNumber": "13",
+      "name": "Muskiz – UPV/EHU",
+      "outbound": "De Muskiz",
+      "inbound": "De UPV/EHU",
+      "variants": [
+        "Normal",
+        "Vuelta 21:35 horas de UPV/EHU",
+        "Por Magisterio"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A3411",
+      "internalNumber": "17",
+      "name": "Bilbao – Getxo",
+      "outbound": "De Bilbao",
+      "inbound": "De Azkorri o Getxo",
+      "variants": [
+        "Hasta Getxo",
+        "Hasta Azkorri",
+        "Ida puente colgante–Getxo"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A3414",
+      "internalNumber": "8",
+      "name": "Bilbao – Getxo (por túneles de Artxanda)",
+      "outbound": "De Bilbao",
+      "inbound": "De Getxo",
+      "variants": [
+        "Normal",
+        "Elexalde–Getxo",
+        "Bilbao–Elexalde",
+        "Ondiz–Bilbao"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A3422",
+      "internalNumber": "3",
+      "name": "Areeta / Las Arenas – Berango (Artea)",
+      "outbound": "De Areeta",
+      "inbound": "De Berango",
+      "variants": [
+        "Por Artea",
+        "No pasa por Artea",
+        "Vuelta no pasa por Villamonte"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A3451",
+      "internalNumber": "2",
+      "name": "Areeta / Las Arenas – Armintza",
+      "outbound": "De Areeta",
+      "inbound": "De Armintza",
+      "variants": [
+        "Normal",
+        "Ida Armintza fin Lemoiz",
+        "Vuelta por Andraka"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A3471",
+      "internalNumber": "6",
+      "name": "Getxo – Gurutzeta / Cruces (por Fadura)",
+      "outbound": "De Getxo",
+      "inbound": "De Cruces",
+      "variants": [
+        "Normal"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A3472",
+      "internalNumber": "15",
+      "name": "Getxo – Gurutzeta / Cruces (desde Las Arenas)",
+      "outbound": "De Areeta",
+      "inbound": "De Cruces",
+      "variants": [
+        "Normal"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "A3499",
+      "internalNumber": "18",
+      "name": "Plentzia – Gorliz",
+      "outbound": "De Plentzia",
+      "inbound": "De Gorliz",
+      "variants": [
+        "Normal",
+        "Directo",
+        "Por Andrakas"
+      ],
+      "codeProvided": true
+    },
+    {
+      "number": "USANSOLO",
+      "internalNumber": null,
+      "name": "Estación Usansolo – Hospital Usansolo",
+      "outbound": "De estación",
+      "inbound": "De hospital",
+      "variants": [
+        "Normal"
+      ],
+      "codeProvided": false
+    },
+    {
+      "number": "ZAMUDIO",
+      "internalNumber": null,
+      "name": "Estación Zamudio – Parque Tecnológico Zamudio",
+      "outbound": null,
+      "inbound": null,
+      "variants": [],
+      "codeProvided": false
+    }
+  ],
+  "directions": [
+    {
+      "name": "Selecciona un recorrido",
+      "stops": [],
+      "shape": [],
+      "verifiedShape": false,
+      "line": ""
+    }
+  ]
+}

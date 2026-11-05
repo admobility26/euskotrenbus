@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS users (
+ id TEXT PRIMARY KEY, username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+ password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('admin','reader')),
+ expires_at INTEGER, active INTEGER NOT NULL DEFAULT 1, created_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS sessions (
+ token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ expires_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id);
+CREATE TABLE IF NOT EXISTS login_limits (key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, resets_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS media (
+ id TEXT PRIMARY KEY, object_key TEXT NOT NULL UNIQUE, filename TEXT NOT NULL,
+ content_type TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('video','gpx','export')),
+ line TEXT NOT NULL, direction INTEGER NOT NULL DEFAULT 0,
+ watermarked INTEGER NOT NULL DEFAULT 0, published INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS routes (id TEXT PRIMARY KEY, payload TEXT NOT NULL, created_by TEXT NOT NULL, created_at INTEGER NOT NULL);
