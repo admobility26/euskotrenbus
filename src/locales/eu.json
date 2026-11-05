@@ -419,5 +419,8 @@
   "Crear ficha y añadir archivos": "Sortu fitxa eta gehitu fitxategiak",
   "＋ Crear ficha sin GPX / añadir PDF": "＋ Sortu fitxa GPXrik gabe / gehitu PDFa",
   "Ficha guardada. Añade el PDF de consulta y, cuando los tengas, el GPX y los vídeos.": "Fitxa gordeta. Gehitu kontsultarako PDFa eta, dituzunean, GPXa eta bideoak.",
-  "Ver PDF": "Ikusi PDFa"
+  "Ver PDF": "Ikusi PDFa",
+  "← Volver a la línea": "← Itzuli lineara",
+  "Abrir editor local": "Ireki tokiko editorea",
+  "Esta web no tiene almacenamiento de archivos configurado. Para adjuntar el PDF, abre el editor local en este ordenador.": "Webgune honek ez du fitxategien biltegiratzea konfiguratuta. PDFa eransteko, ireki tokiko editorea ordenagailu honetan."
 }
