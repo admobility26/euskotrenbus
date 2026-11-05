@@ -414,5 +414,10 @@
   "Mensaje en euskera": "Mezua euskaraz",
   "Añade ambas versiones para mostrar y exportar el aviso en el idioma elegido. Si falta una traducción, se muestra el texto original.": "Gehitu bi bertsioak, abisua hautatutako hizkuntzan erakusteko eta esportatzeko. Itzulpena falta bada, jatorrizko testua erakutsiko da.",
   "Acercar": "Hurbildu",
-  "Alejar": "Urrundu"
+  "Alejar": "Urrundu",
+  "Crear ficha sin GPX": "Sortu fitxa GPXrik gabe",
+  "Crear ficha y añadir archivos": "Sortu fitxa eta gehitu fitxategiak",
+  "＋ Crear ficha sin GPX / añadir PDF": "＋ Sortu fitxa GPXrik gabe / gehitu PDFa",
+  "Ficha guardada. Añade el PDF de consulta y, cuando los tengas, el GPX y los vídeos.": "Fitxa gordeta. Gehitu kontsultarako PDFa eta, dituzunean, GPXa eta bideoak.",
+  "Ver PDF": "Ikusi PDFa"
 }
