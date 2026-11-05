@@ -35,3 +35,11 @@ Para asignar a varias líneas, pulsa **Editar punto y asignaciones**. En «Asign
 **Incluir** fuerza el aviso en el paso continuo más cercano del GPX, ignorando radio y orientación; revisa ese paso antes de exportar. Si está a más de 60 m del punto, la lista de coincidencias lo marca como alejado. No atraviesa discontinuidades del GPX. Un punto desactivado globalmente no se muestra aunque esté incluido manualmente.
 
 **Eliminar de toda la base** requiere confirmar y elimina el punto para todos los recorridos futuros; para corregir solo una línea/sentido usa Excluir. Las correcciones se aplican tanto a la vista previa como al siguiente MP4 exportado. Los MP4 ya creados deben volver a exportarse y publicarse.
+
+## Euskara / Castellano
+
+El selector permanece visible en la parte superior, también en acceso, biblioteca y paneles de administración. Recuerda la elección en este navegador. Cambiar de idioma no reinicia el recorrido ni borra los formularios abiertos. Se traducen controles, mensajes, errores del servidor, fechas, cabecera, catálogo de líneas y variantes.
+
+El MP4 se genera en el idioma seleccionado al iniciar la exportación. Cambiar de idioma durante el proceso no mezcla idiomas en el archivo. Los MP4 ya creados y los PDF adjuntos conservan su contenido original.
+
+Los avisos permiten título y mensaje en castellano y euskera; completa ambas versiones para que el texto propio aparezca en el idioma elegido. Los recorridos nuevos admiten nombre en ambos idiomas. Si falta una versión del contenido escrito por el administrador, se conserva el texto original: no se inventa ni envía a servicios externos una traducción automática. Los códigos de línea, sentidos guardados, variantes y nombres de archivo no se modifican al traducir la interfaz.

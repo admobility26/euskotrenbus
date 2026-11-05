@@ -1,3 +1,4 @@
+import {t,getLanguage,translatedField} from './i18n.js';
 // Local metric projection for proximity and directional matching on Bilbao GPX tracks.
 const rad=Math.PI/180;
 export const distance=(a,b)=>Math.hypot((a[0]-b[0])*111320*Math.cos((a[1]+b[1])/2*rad),(a[1]-b[1])*111320);
@@ -32,7 +33,7 @@ export function activeHazard(matched,points,pos){
  const traveled=matched.cumulative[pos.index]+distance(points[pos.index].coordinates,pos.point.coordinates);
  return matched.matches.filter(m=>Math.abs(m.at-traveled)<85&&(m.manual||distance(pos.point.coordinates,m.hazard.coordinates)<85)).sort((a,b)=>Math.abs(a.at-traveled)-Math.abs(b.at-traveled))[0]?.hazard||null;
 }
-export function drawHazard(ctx,h){
- if(!h)return;ctx.save();ctx.fillStyle='#fffdf5';ctx.strokeStyle='#cf372c';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(44,270,510,240,12);ctx.fill();ctx.stroke();ctx.fillStyle='#cf372c';ctx.font='bold 18px Arial';ctx.fillText('⚠ PUNTO CONFLICTIVO',60,299);ctx.fillStyle='#24353b';let y=326;
- for(const [value,size] of [[h.title,18],[h.description,15]]){ctx.font=`${size===18?'bold ':''}${size}px Arial`;let row='';for(const word of value.split(' ')){if(ctx.measureText(row+' '+word).width>470){if(y<498)ctx.fillText(row,60,y);y+=21;row=word;}else row+=(row?' ':'')+word;}if(y<498)ctx.fillText(row,60,y);y+=24;}ctx.restore();
+export function drawHazard(ctx,h,language=getLanguage()){
+ if(!h)return;ctx.save();ctx.fillStyle='#fffdf5';ctx.strokeStyle='#cf372c';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(44,270,510,240,12);ctx.fill();ctx.stroke();ctx.fillStyle='#cf372c';ctx.font='bold 18px Arial';ctx.fillText(t('⚠ PUNTO CONFLICTIVO',undefined,language),60,299);ctx.fillStyle='#24353b';let y=326;
+ for(const [value,size] of [[translatedField(h,'title',language),18],[translatedField(h,'description',language),15]]){ctx.font=`${size===18?'bold ':''}${size}px Arial`;let row='';for(const word of value.split(' ')){if(ctx.measureText(row+' '+word).width>470){if(y<498)ctx.fillText(row,60,y);y+=21;row=word;}else row+=(row?' ':'')+word;}if(y<498)ctx.fillText(row,60,y);y+=24;}ctx.restore();
 }

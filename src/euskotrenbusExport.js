@@ -1,3 +1,4 @@
+import {t,getLanguage,translatedField} from './i18n.js';
 import {matchHazards,activeHazard,drawHazard} from './hazards.js';
 import {routeFraction,exportLimit} from './videoSync.js';
 import {Map,LngLatBounds} from 'maplibre-gl';
@@ -7,7 +8,7 @@ const abort=signal=>{if(signal?.aborted)throw new DOMException('Exportación can
 const line=coordinates=>({type:'Feature',properties:{},geometry:{type:'LineString',coordinates}});
 const image=url=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('No se pudo cargar la carátula.'));img.src=url;});
 const frame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
-export async function exportEuskotrenBusMp4({hazards=[],videoUrl,route,points,demoMode,offset=0,headerUrl,signal,onProgress,fileHandle}){
+export async function exportEuskotrenBusMp4({language=getLanguage(),hazards=[],videoUrl,route,points,demoMode,offset=0,headerUrl,signal,onProgress,fileHandle}){
  if(!videoUrl)throw Error('Carga un vídeo o vuelve a la simulación para exportar el recorrido.');
  if(!await canEncodeVideo('avc',{width:1280,height:720,frameRate:20}))throw Error('Este navegador no permite crear MP4 H.264. Abre la muestra en Chrome o Edge actualizado.');
  abort(signal);
@@ -37,12 +38,12 @@ export async function exportEuskotrenBusMp4({hazards=[],videoUrl,route,points,de
   await output.start();
   const count=Math.ceil(duration*20);const timestamps=(function*(){for(let i=0;i<count;i++)yield i/20;})();videoIterator=new CanvasSink(videoTrack,{width:640,poolSize:2}).canvasesAtTimestamps(timestamps);
   const clock=timeline(points),matched=matchHazards(points,hazards,route.id);let index=0;
-  const text=(value,x,y,size,color='#24353b',bold=false)=>{ctx.fillStyle=color;ctx.font=`${bold?'bold ':''}${size}px Arial`;ctx.fillText(value,x,y);};
+  const text=(value,x,y,size,color='#24353b',bold=false)=>{ctx.fillStyle=color;ctx.font=`${bold?'bold ':''}${size}px Arial`;ctx.fillText(t(value,undefined,language),x,y);};
   for await(const decoded of videoIterator){
    abort(signal);if(!decoded)throw Error('Falta un fotograma del vídeo.');const t=index/20,dt=Math.min(.05,duration-t),fraction=Math.max(0,Math.min(1,!demoMode&&clock.timed?routeFraction(t,offset,clock.duration):t/duration));const pos=pointAt(points,fraction,clock),loc=exportMap.project(pos.point.coordinates);
    const active=demoMode?Math.min(route.stops.length-1,Math.floor((t+.015)/4)):route.stops.reduce((best,s,i)=>Math.hypot(stops[i].x-loc.x,stops[i].y-loc.y)<Math.hypot(stops[best].x-loc.x,stops[best].y-loc.y)?i:best,0);
    ctx.fillStyle='#f5f5f2';ctx.fillRect(0,0,1280,720);ctx.drawImage(header,0,0,1280,206);
-   text(`LÍNEA ${route.line||'—'}  ·  ${route.name}`,24,238,19,'#263b43',true);text(demoMode?'SIMULACIÓN · escena y tiempos ilustrativos':'RECORRIDO · vídeo y mapa',896,238,13,'#cf372c',true);
+   text(`LÍNEA ${route.line||'—'}  ·  ${translatedField(route,'name',language)}`,24,238,19,'#263b43',true);text(demoMode?'SIMULACIÓN · escena y tiempos ilustrativos':'RECORRIDO · vídeo y mapa',896,238,13,'#cf372c',true);
    ctx.drawImage(background,24,251);ctx.save();ctx.beginPath();ctx.rect(24,251,850,456);ctx.clip();ctx.translate(24,251);
    ctx.strokeStyle='#087d87';ctx.lineWidth=4;ctx.beginPath();projected.slice(0,pos.index+1).forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.lineTo(loc.x,loc.y);ctx.stroke();
    stops.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,i===active?13:10,0,Math.PI*2);ctx.fillStyle=i===active?'#263b43':'#0769aa';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText(String(i+1),p.x,p.y+3);});
@@ -50,11 +51,11 @@ export async function exportEuskotrenBusMp4({hazards=[],videoUrl,route,points,de
    ctx.fillStyle='#17292f';ctx.fillRect(894,251,362,204);const scale=Math.min(362/decoded.canvas.width,204/decoded.canvas.height),vw=decoded.canvas.width*scale,vh=decoded.canvas.height*scale;ctx.drawImage(decoded.canvas,894+(362-vw)/2,251+(204-vh)/2,vw,vh);
    ctx.save();ctx.globalAlpha=.65;ctx.drawImage(watermark,1170,379,75,60);ctx.restore();
    text(route.sourceType==='gpx'?'PUNTO DEL RECORRIDO':'PARADA · PUNTO DE ATENCIÓN',896,487,12,'#d33b2e',true);text(`${String(active+1).padStart(2,'0')} / ${route.stops.length}`,896,520,25,'#24353b',true);
-   const name=route.stops[active].name;const words=name.split(' ');let row='',y=552;for(const word of words){ctx.font='bold 17px Arial';if(ctx.measureText(row+' '+word).width>345){text(row,896,y,17,'#24353b',true);y+=23;row=word;}else row+=(row?' ':'')+word;}text(row,896,y,17,'#24353b',true);
+   const name=t(route.stops[active].name,undefined,language);const words=name.split(' ');let row='',y=552;for(const word of words){ctx.font='bold 17px Arial';if(ctx.measureText(row+' '+word).width>345){text(row,896,y,17,'#24353b',true);y+=23;row=word;}else row+=(row?' ':'')+word;}text(row,896,y,17,'#24353b',true);
    text(`Código ${route.stops[active].code}`,896,615,13,'#6d7b80');text(`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')} / ${Math.floor(duration/60)}:${String(Math.floor(duration%60)).padStart(2,'0')}`,896,647,17,'#24353b',true);ctx.fillStyle='#d9dedb';ctx.fillRect(896,660,360,5);ctx.fillStyle='#0769aa';ctx.fillRect(896,660,360*t/duration,5);
    ctx.fillStyle='#ffffffe8';ctx.fillRect(28,683,432,20);text('© OpenStreetMap contributors · Recorrido GPX del administrador',34,697,11);text('EuskotrenBus · Aula de rutas / AD Mobility',896,697,12,'#6d7b80');
    if(audioSource){while(audioNext&&!audioNext.done&&audioNext.value.timestamp<t+dt){const sample=audioNext.value;try{await audioSource.add(sample);}finally{sample.close();}audioNext=await audioIterator.next();}}
-   drawHazard(ctx,activeHazard(matched,points,pos));
+   drawHazard(ctx,activeHazard(matched,points,pos),language);
    await source.add(t,dt);index++;if(index%10===0){onProgress({percent:Math.round(index/count*99),label:'Creando MP4 con mapa y vídeo…'});await new Promise(r=>setTimeout(r,0));}
   }
   if(audioSource){while(audioNext&&!audioNext.done){abort(signal);const sample=audioNext.value;try{await audioSource.add(sample);}finally{sample.close();}audioNext=await audioIterator.next();}audioSource.close();}

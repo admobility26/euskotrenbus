@@ -5,10 +5,11 @@ export function validateHazard(b) {
  if(!Number.isFinite(b.radius)||b.radius<5||b.radius>60||!Number.isFinite(b.tolerance)||b.tolerance<5||b.tolerance>80)fail();
  for(const key of ['bearing','exitBearing'])if(b[key]!==null&&(!Number.isFinite(b[key])||b[key]<0||b[key]>=360))fail();
  if(typeof b.active!=='boolean')fail();
+ for(const [field,max] of [['titleEu',90],['descriptionEu',350]])if(b[field]!==undefined&&(typeof b[field]!=='string'||b[field].length>max))fail();
  const assignments=b.assignments??{};
  if(!assignments||typeof assignments!=='object'||Array.isArray(assignments)||Object.keys(assignments).length>1000)fail();
  for(const [id,mode] of Object.entries(assignments))if(!/^[a-zA-Z0-9-]{1,64}$/.test(id)||!['include','exclude'].includes(mode))fail();
- return {assignments,title:b.title.trim(),description:b.description.trim(),coordinates:b.coordinates,radius:b.radius,tolerance:b.tolerance,bearing:b.bearing,exitBearing:b.exitBearing,active:b.active};
+ return {titleEu:(b.titleEu||'').trim(),descriptionEu:(b.descriptionEu||'').trim(),assignments,title:b.title.trim(),description:b.description.trim(),coordinates:b.coordinates,radius:b.radius,tolerance:b.tolerance,bearing:b.bearing,exitBearing:b.exitBearing,active:b.active};
 }
 export async function hazards(request,env,user,path) {
  if(!/^\/api\/admin\/hazards(?:\/[a-zA-Z0-9-]+)?$/.test(path))return null;

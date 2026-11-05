@@ -36,3 +36,7 @@ Los mapas base requieren Internet. El exportador conserva el límite de 5 minuto
 Imágenes y tabla aportadas por el administrador el 05/11/2026; referencia conservada en `docs/referencia`. Las denominaciones no se han contrastado con horarios actuales. Mapa © OpenStreetMap contributors. Las marcas y fotografías pertenecen a sus titulares.
 
 Compilación: `npm run build`. Pruebas: `node --test tests/*.test.mjs`.
+
+## Idiomas
+
+Selector permanente Euskara / Castellano con preferencia por navegador, interfaz y catálogo traducidos, y exportación MP4 en el idioma elegido. Los avisos y nombres de recorridos admiten versiones redactadas por el administrador en ambos idiomas. Los documentos PDF y vídeos originales conservan su contenido.
