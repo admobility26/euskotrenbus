@@ -15,11 +15,11 @@ test('GPX direction and selected line variant survive route validation',()=>{
  assert.equal(validateRoute(route).variant,route.variant);assert.equal(validateRoute(route).direction,'Vuelta');assert.throws(()=>validateRoute({...route,variant:'x'.repeat(161)}));
 });
 test('deployment and local server are independent of the source company',()=>{
- const config=JSON.parse(fs.readFileSync(new URL('../wrangler.jsonc',import.meta.url)));assert.equal(config.name,'euskotrenbus');assert.equal(config.d1_databases,undefined);
+ const config=JSON.parse(fs.readFileSync(new URL('../wrangler.jsonc',import.meta.url)));assert.equal(config.name,'euskotrenbus');assert.equal(config.d1_databases[0].binding,'DB');assert.equal(config.d1_databases[0].database_name,'euskotrenbus-users');assert.notEqual(config.d1_databases[0].database_id,'65749d4a-610f-4b75-b443-d486e2c0d61e');
  const worker=fs.readFileSync(new URL('../server/worker.js',import.meta.url),'utf8');assert.ok(worker.includes('__Host-euskotrenbus'));assert.ok(!worker.includes('bilbobus'));
  const server=fs.readFileSync(new URL('../server/local.mjs',import.meta.url),'utf8');assert.ok(server.includes('EUSKOTRENBUS_DATA'));assert.ok(server.includes('euskotrenbus.sqlite'));assert.ok(server.includes('5193'));
 });
 test('corporate assets exist and supplied logo is the export watermark',()=>{
  for(const file of ['cabecera-euskotren.svg','bus-euskotren.jpeg','euskotren-logo.png','euskotren-autobusa.jpg'])assert.ok(fs.statSync(new URL('../public/assets/'+file,import.meta.url)).size>0);
- const exporter=fs.readFileSync(new URL('../src/euskotrenbusExport.js',import.meta.url),'utf8');assert.ok(exporter.includes('euskotren-autobusa.jpg'));assert.ok(exporter.includes('drawHazard'));
+ const exporter=fs.readFileSync(new URL('../src/euskotrenbusExport.js',import.meta.url),'utf8');assert.ok(exporter.includes('logo-euskotren-bus.svg'));assert.ok(exporter.includes('drawHazard'));
 });

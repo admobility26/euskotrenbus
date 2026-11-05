@@ -1,3 +1,4 @@
+import {adminSetup} from './adminSetup.js';
 import {hazards} from './hazards.js';
 import {attachments} from './attachments.js';
 import {validateRoute,routesSchema} from './routes.js';
@@ -23,15 +24,7 @@ async function handle(request,env){
  if(!path.startsWith('/api/'))return env.ASSETS.fetch(request);
  if(!env.DB)fail('El servicio de cuentas todavía no está configurado.',503);
  if(!['GET','HEAD'].includes(request.method)){if(request.headers.get('Origin')!==url.origin)fail('Origen de petición no autorizado.',403);if(!(request.method==='PUT'&&/^\/api\/routes\/[a-zA-Z0-9-]+\/files$/.test(path))&&!request.headers.get('Content-Type')?.startsWith('application/json'))fail('Se requiere JSON.',415);}
- if(path==='/api/setup'&&request.method==='POST'){
-  if(!env.ADMIN_SETUP_TOKEN)fail('La creación del administrador no está habilitada.',403);
-  const supplied=request.headers.get('Authorization')?.replace(/^Bearer /,'')||'';
-  if(await digest(supplied)!==await digest(env.ADMIN_SETUP_TOKEN))fail('Código de instalación no válido.',403);
-  if(await env.DB.prepare("SELECT id FROM users WHERE role='admin'").first())fail('El administrador ya está creado.',409);
-  const b=await body(request),username=normalize(b.username);checkUsername(username);checkPassword(b.password);
-  // Stable ID makes simultaneous setup requests unable to create multiple administrators.
-  await env.DB.prepare("INSERT INTO users(id,username,password_hash,role,expires_at,active,created_at) VALUES('administrator',?,?,'admin',NULL,1,?)").bind(username,await passwordHash(b.password),Date.now()).run();return json({ok:true},201);
- }
+ const setupResponse=await adminSetup(request,env,path);if(setupResponse)return setupResponse;
  if(path==='/api/login'&&request.method==='POST'){
   const b=await body(request),username=normalize(b.username),ip=request.headers.get('CF-Connecting-IP')||'local';
   const limitKey=await digest(ip),now=Date.now();

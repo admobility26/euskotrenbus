@@ -1,6 +1,6 @@
 # Editor local Euskotren Bus
 
-Abre ABRIR-EDITOR.command y entra en http://127.0.0.1:5193/. Requiere Node.js 24 y una compilación previa si se parte del código fuente. ABRIR-MUESTRA.command abre el mismo editor autenticado. El primer inicio crea admin y una contraseña aleatoria en datos-locales/ACCESO-ADMIN.txt; no comparte cuentas con otra aplicación.
+Abre ABRIR-EDITOR.command y entra en http://127.0.0.1:5193/. Requiere Node.js 24 y una compilación previa si se parte del código fuente. ABRIR-MUESTRA.command abre el mismo editor autenticado. El primer inicio prepara un enlace privado en datos-locales/ACTIVAR-ADMIN.html para elegir la contraseña de admobility26@gmail.com; no comparte cuentas con otra aplicación.
 
 La biblioteca contiene 11 líneas con código A y dos servicios sin código oficial en la tabla, con sus variantes. Crea cada recorrido a partir del GPX, selecciona Ida/Vuelta y variante, añade vídeo original y PDF opcional. El PDF solo se consulta; no determina el itinerario. Los extremos del GPX son puntos de referencia, no paradas oficiales inferidas. Archivos locales de hasta 8 GB. Los originales no requieren marca previa: se añade el logo Euskotren Autobusa al exportar.
 

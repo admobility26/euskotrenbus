@@ -8,10 +8,14 @@ Genera el paquete con `npm run package:local`. Para incluir datos, detén el ser
 
 Conserva datos-locales en un volumen persistente. Configura HTTPS mediante proxy inverso y `EUSKOTRENBUS_ORIGIN=https://dominio-elegido`. Usa `EUSKOTRENBUS_HOST=127.0.0.1` si el proxy está en la misma máquina. El puerto predeterminado es 5193; se puede cambiar con PORT. Ajusta los límites de subida del proxy para los originales de hasta 8 GB y prepara copias de seguridad. No publiques datos-locales como contenido estático.
 
-## Cloudflare, si se elige más adelante
+## Cloudflare
 
-`wrangler.jsonc` contiene únicamente el Worker euskotrenbus y sus recursos estáticos. Crea una nueva base D1, por ejemplo euskotrenbus-users; añade un bloque d1_databases con binding DB y el identificador NUEVO. Inicializa server/schema.sql y crea el administrador por el mecanismo ADMIN_SETUP_TOKEN de server/worker.js. No reutilices identificadores, tokens ni cuentas de Bilbobus.
+Web: https://euskotrenbus.admobility26.workers.dev. Worker euskotrenbus con binding DB a la base independiente euskotrenbus-users. No comparte usuarios ni datos con Bilbobus.
 
-Para archivos remotos se necesita el binding MEDIA a un almacén privado propio compatible con R2; sin él, las cargas mostrarán almacenamiento pendiente. El editor local funciona con archivos en disco y no requiere R2. Los datos locales no se suben automáticamente a Cloudflare. No actives servicios de pago sin revisar sus costes.
+El administrador es admobility26@gmail.com. La primera contraseña la elige el propietario mediante el enlace privado de activación entregado fuera del repositorio. La creación requiere un token aleatorio con caducidad; su hash se guarda en admin_setup y se elimina tras activar la cuenta. El correo por sí solo no permite reclamar ni restablecer la cuenta. Después, los usuarios solo se crean desde el panel del administrador.
+
+La aplicación local y la web tienen bases independientes: activar una no crea la cuenta en la otra. El código de activación y los archivos HTML de acceso no se suben a GitHub. Guarda los enlaces de primera activación en un lugar privado y no los compartas.
+
+El almacén remoto MEDIA no está activado. Los originales y documentos del editor local siguen en disco; para publicarlos en remoto hay que elegir un almacén privado o trasladar la biblioteca al servidor propio. No se ha contratado R2.
 
 El comando de compilación es npm run build. Wrangler también lo ejecuta mediante build.command antes de desplegar para crear dist.

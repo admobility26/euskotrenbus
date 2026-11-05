@@ -6,7 +6,7 @@ Copia independiente del aula Bilbobus, preparada para Euskotren Bus. Repositorio
 
 Requiere Node.js 24. Ejecuta `npm ci`, `npm run build` y `npm start`, o abre `ABRIR-EDITOR.command` después de compilar. Dirección: http://127.0.0.1:5193/ (puerto distinto al de Bilbobus).
 
-El primer arranque crea el usuario `admin` y una contraseña aleatoria en `datos-locales/ACCESO-ADMIN.txt`. Cámbiala desde «Mi contraseña». No está incluida en GitHub. SQLite y archivos se guardan en `datos-locales`, excluida de Git. Cookies, nombre de base de datos y claves locales son exclusivos de Euskotren Bus.
+El primer arranque prepara un enlace privado en `datos-locales/ACTIVAR-ADMIN.html`. Ábrelo para elegir la contraseña de `admobility26@gmail.com`. El enlace solo se usa una vez y caduca en siete días. No está incluida en GitHub. SQLite y archivos se guardan en `datos-locales`, excluida de Git. Cookies, nombre de base de datos y claves locales son exclusivos de Euskotren Bus.
 
 ## Biblioteca
 
@@ -27,7 +27,7 @@ Selecciona una línea, pulsa «Crear recorrido desde GPX» y elige Ida/Vuelta y 
 
 ## Alojamiento
 
-La copia funciona localmente con su propia SQLite. No está desplegada en Internet. `wrangler.jsonc` usa el nombre `euskotrenbus` y no enlaza la base de datos de Bilbobus. Para Cloudflare hay que crear una D1 independiente y añadir su enlace; el almacenamiento remoto también debe ser independiente. Consulta `docs/ALOJAMIENTO.md`.
+La copia funciona localmente con su propia SQLite. La web usa una base D1 exclusiva de Euskotren Bus. `wrangler.jsonc` usa el nombre `euskotrenbus` y no enlaza la base de datos de Bilbobus. Cloudflare ya tiene enlazada la D1 euskotrenbus-users; los archivos locales no se transfieren automáticamente a la web. Consulta `docs/ALOJAMIENTO.md`.
 
 Los mapas base requieren Internet. El exportador conserva el límite de 5 minutos si el navegador no permite guardar directamente en disco. La exportación completa de una hora requiere validación con los archivos reales del administrador.
 

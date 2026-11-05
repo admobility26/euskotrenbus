@@ -7,7 +7,7 @@ import {Readable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {fileURLToPath} from 'node:url';
 import worker from './worker.js';
-import {passwordHash} from './password.js';
+import {digest} from './password.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const directory=path.resolve(process.env.EUSKOTRENBUS_DATA||path.join(root,'datos-locales'));
 await fsp.mkdir(path.join(directory,'archivos'),{recursive:true});
@@ -17,9 +17,13 @@ database.exec(await fsp.readFile(path.join(root,'server/schema.sql'),'utf8'));
 function statement(sql,args=[]){return {bind(...values){return statement(sql,values);},async first(){return database.prepare(sql).get(...args)||null;},async all(){return {results:database.prepare(sql).all(...args)};},async run(){return database.prepare(sql).run(...args);}};}
 const DB={prepare:statement,async batch(items){database.exec('BEGIN');try{const result=[];for(const item of items)result.push(await item.run());database.exec('COMMIT');return result;}catch(e){database.exec('ROLLBACK');throw e;}}};
 if(!database.prepare("SELECT id FROM users WHERE role='admin'").get()){
- const password=crypto.randomUUID()+crypto.randomUUID().slice(0,8);
- database.prepare("INSERT INTO users VALUES(?,?,?,'admin',NULL,1,?)").run('administrator','admin',await passwordHash(password),Date.now());
- await fsp.writeFile(path.join(directory,'ACCESO-ADMIN.txt'),`Usuario: admin\nContraseña inicial: ${password}\nCámbiala en Mi contraseña. No compartas este archivo.\n`,{mode:0o600});
+ if(!database.prepare("SELECT id FROM admin_setup WHERE id='owner'").get()){
+  const token=crypto.randomUUID()+crypto.randomUUID();
+  database.prepare("INSERT INTO admin_setup VALUES('owner',?,?)").run(await digest(token),Date.now()+7*86400000);
+  const link=(process.env.EUSKOTRENBUS_ORIGIN||`http://127.0.0.1:${process.env.PORT||5193}`)+'/#activar='+token;
+  await fsp.writeFile(path.join(directory,'ACTIVAR-ADMIN.html'),`<!doctype html><meta charset="utf-8"><title>Activar administrador</title><h1>Euskotren Bus</h1><p>Cuenta: admobility26@gmail.com</p><p><a href="${link}">Elegir mi contraseña y activar la cuenta</a></p><p>Enlace privado, de un solo uso, válido durante siete días. No compartir.</p>`,{mode:0o600});
+ }
+
 }
 function objectPath(key){if(!/^[a-zA-Z0-9/-]+$/.test(key)||key.includes('..'))throw Error('Clave no válida');return path.join(directory,'archivos',key);}
 async function readObject(file,headers=new Headers()){
@@ -33,5 +37,5 @@ const types={'.svg':'image/svg+xml','.jpeg':'image/jpeg','.html':'text/html','.j
 const ASSETS={async fetch(request){let name;try{name=decodeURIComponent(new URL(request.url).pathname);}catch{return new Response(null,{status:400});}const dist=path.join(root,'dist');let file=path.resolve(dist,'.'+name);if(!file.startsWith(dist+path.sep)&&file!==dist)return new Response(null,{status:403});if(!path.extname(file))file=path.join(dist,'index.html');const object=await readObject(file,request.headers);if(!object)return new Response(null,{status:404});const h={'Content-Type':types[path.extname(file)]||'application/octet-stream','Content-Length':String(object.range?.length??object.size)};if(object.range)h['Content-Range']=`bytes ${object.range.offset}-${object.range.offset+object.range.length-1}/${object.size}`;return new Response(request.method==='HEAD'?null:object.body,{status:object.range?206:200,headers:h});}};
 const port=Number(process.env.PORT||5193),host=process.env.EUSKOTRENBUS_HOST||'127.0.0.1';
 const server=http.createServer(async(req,res)=>{try{const origin=process.env.EUSKOTRENBUS_ORIGIN||`http://${req.headers.host}`;const headers=new Headers();for(const [k,v]of Object.entries(req.headers))if(v)headers.set(k,Array.isArray(v)?v.join(','):v);headers.set('CF-Connecting-IP',req.socket.remoteAddress||'local');const request=new Request(origin+req.url,{method:req.method,headers,...(!['GET','HEAD'].includes(req.method)?{body:Readable.toWeb(req),duplex:'half'}:{})});const response=await worker.fetch(request,{DB,MEDIA,ASSETS,LOCAL_EDITOR:true,MAX_UPLOAD_BYTES:8*1024**3});res.writeHead(response.status,Object.fromEntries(response.headers));if(response.body)await pipeline(Readable.fromWeb(response.body),res);else res.end();}catch(e){if(!res.headersSent)res.writeHead(e.status||500,{'Content-Type':'application/json'});res.end(JSON.stringify({error:e.status?e.message:'No se pudo completar la operación.'}));}});
-server.listen(port,host,()=>console.log(`EuskotrenBus local: http://${host}:${port}\nDatos: ${directory}\nAcceso inicial: ${path.join(directory,'ACCESO-ADMIN.txt')}`));
+server.listen(port,host,()=>console.log(`EuskotrenBus local: http://${host}:${port}\nDatos: ${directory}\nAcceso inicial: ${path.join(directory,'ACTIVAR-ADMIN.html')}`));
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>server.close(()=>{database.close();process.exit(0);}));
