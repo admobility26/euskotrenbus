@@ -17,5 +17,11 @@
       "database_name": "euskotrenbus-users",
       "database_id": "22e54801-bb76-4969-adff-d0ee5437fda2"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "euskotrenbus-media"
+    }
   ]
 }
